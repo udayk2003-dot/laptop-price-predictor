@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Latest Tech News</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-pink-50 font-sans">
+
+  <div class="max-w-6xl mx-auto px-4 py-6">
+    <a href="{{ url_for('index') }}" class="text-sm text-gray-500 hover:underline">← Back to Home</a>
+    <h2 class="text-center text-3xl font-bold text-gray-800 mt-4">Stay Updated with Tech News</h2>
+    <p class="text-center text-gray-600 mt-2">
+      Get the latest insights, reviews, and breaking news from the world of technology
+    </p>
+
+    <!-- Categories with links and active highlighting -->
+    <div class="flex flex-wrap justify-center gap-2 mt-6">
+      {% set categories = ['all', 'product launch', 'hardware', 'review', 'industry insight', 'buying guide', 'tech trends'] %}
+      {% for cat in categories %}
+        <a href="{{ url_for('news') }}?category={{ cat }}"
+           class="px-4 py-1 rounded-full text-sm
+                  {% if current_category.lower() == cat %}
+                    bg-gray-900 text-white
+                  {% else %}
+                    bg-white border text-gray-700 hover:bg-gray-200
+                  {% endif %}">
+          {{ cat.title() }}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- News Articles Grid -->
+  <div class="max-w-6xl mx-auto px-4 pb-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+    {% if articles %}
+      {% for article in articles %}
+        <div class="bg-white rounded-xl shadow-md overflow-hidden flex flex-col">
+          <div class="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
+            {% if article.urlToImage %}
+              <img src="{{ article.urlToImage }}" alt="News Image" class="object-cover w-full h-full" />
+            {% else %}
+              <div class="text-gray-400 text-4xl">📰</div>
+            {% endif %}
+          </div>
+
+          <div class="p-6 flex flex-col flex-grow">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded-full">
+                {{ article.source.name or 'Tech News' }}
+              </span>
+              <span class="text-gray-500 text-sm">
+                {{ article.publishedAt[:10] if article.publishedAt else '' }}
+              </span>
+            </div>
+            <h3 class="text-lg font-bold text-gray-800 flex-grow">{{ article.title }}</h3>
+            <p class="text-gray-600 mt-2 flex-grow">{{ article.description or '' }}</p>
+            <a href="{{ article.url }}" target="_blank"
+               class="mt-4 inline-block bg-gray-900 text-white px-4 py-1.5 rounded-md text-sm hover:bg-gray-800">
+               Read More →
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="text-center text-gray-700 col-span-3">No news found. Please try again later.</p>
+    {% endif %}
+  </div>
+
+</body>
+</html>

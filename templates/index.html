@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Laptop Tech Compass</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="overlay"></div>
+
+  
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="heading">Your Ultimate Laptop Guide</div>
+    <p>Predict prices, compare specifications, and stay updated with the latest tech news</p>
+
+    <div class="card-container" id="sections">
+      <div class="card">
+        <h2>⚙️ Price Prediction</h2>
+        <p>Get accurate price predictions based on laptop specifications.<br>Brand & Model<br>Processor, RAM, GPU<br>OS & Display</p>
+        <a href="{{ url_for('price_prediction') }}">Start Prediction →</a>
+      </div>
+
+      <div class="card">
+        <h2>📊 Laptop Comparison</h2>
+        <p>Compare two laptops side by side with detailed specs.<br>Performance & Price<br>Value Rating<br>Pros & Cons</p>
+        <a href="/comparison">Start Comparison →</a>
+      </div>
+
+      <div class="card">
+        <h2>📰 Latest Tech News</h2>
+        <p>Stay updated with the latest technology trends and news.<br>Reviews, Launches<br>Trends & Analysis</p>
+        <a href="/news">Read News →</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Laptop Comparison</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #e6fff2;
+    }
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 40px 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 10px 20px;
+      background-color: #0a58ca;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+      z-index: 1000;
+    }
+    .back-button:hover {
+      background-color: #074bb5;
+    }
+    .dropdowns {
+      display: flex;
+      justify-content: space-between;
+      gap: 30px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+    .laptop-box {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+      flex-grow: 1;
+    }
+    select {
+      padding: 10px;
+      font-size: 16px;
+      width: 100%;
+      margin-bottom: 10px;
+      border-radius: 6px;
+    }
+    button {
+      display: block;
+      margin: 0 auto 30px;
+      padding: 12px 24px;
+      font-size: 16px;
+      background: #0a58ca;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #074bb5;
+    }
+    .specs {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .card h3 {
+      text-align: center;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      padding: 6px 0;
+      display: flex;
+      justify-content: space-between;
+    }
+    .highlight {
+      background-color: #d4edda;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Laptop Comparison</h1>
+    <a href="/" class="back-button">← Back to Home</a>
+
+    <div class="dropdowns">
+      <div class="laptop-box">
+        <h3>Choose Laptop 1</h3>
+        <select id="laptop1" onchange="loadSpecs(1)">
+          <option value="" disabled selected>Select Model</option>
+        </select>
+        <div id="preview1" style="margin-top: 10px;"></div>
+      </div>
+      <div class="laptop-box">
+        <h3>Choose Laptop 2</h3>
+        <select id="laptop2" onchange="loadSpecs(2)">
+          <option value="" disabled selected>Select Model</option>
+        </select>
+        <div id="preview2" style="margin-top: 10px;"></div>
+      </div>
+    </div>
+
+    <button onclick="compareLaptops()">Compare</button>
+
+    <div class="specs" id="results" style="display:none;">
+      <div class="card">
+        <h3 id="laptop1Title"></h3>
+        <ul id="specs1"></ul>
+      </div>
+      <div class="card">
+        <h3 id="laptop2Title"></h3>
+        <ul id="specs2"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let specsCache = {};
+    let loadedModels = false;
+
+    function loadModels() {
+      if (loadedModels) return;
+      loadedModels = true;
+
+      fetch('/get_laptops')
+        .then(res => res.json())
+        .then(models => {
+          const sel1 = document.getElementById('laptop1');
+          const sel2 = document.getElementById('laptop2');
+          models.forEach(model => {
+            const option1 = new Option(model, model);
+            const option2 = new Option(model, model);
+            sel1.add(option1);
+            sel2.add(option2);
+          });
+        })
+        .catch(err => {
+          console.error('Error fetching laptop models:', err);
+        });
+    }
+
+    document.getElementById('laptop1').addEventListener('focus', loadModels);
+    document.getElementById('laptop2').addEventListener('focus', loadModels);
+
+    function loadSpecs(num) {
+      const model = document.getElementById(`laptop${num}`).value;
+      if (!model) {
+        document.getElementById(`preview${num}`).innerHTML = '';
+        specsCache[`laptop${num}`] = null;
+        return;
+      }
+
+      fetch('/get_specs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model })
+      })
+      .then(res => res.json())
+      .then(data => {
+        specsCache[`laptop${num}`] = data;
+        document.getElementById(`preview${num}`).innerHTML = `
+          <div style="background:#f0f8ff;padding:10px;border-radius:8px">
+            <p><strong>Price: ${data['Price'] || 'N/A'}</strong></p>
+          </div>`;
+      })
+      .catch(err => {
+        console.error('Error loading specs:', err);
+        document.getElementById(`preview${num}`).innerHTML = '<p style="color:red;">Failed to load specs.</p>';
+        specsCache[`laptop${num}`] = null;
+      });
+    }
+
+    function compareLaptops() {
+      const specs1 = specsCache['laptop1'];
+      const specs2 = specsCache['laptop2'];
+
+      if (!specs1 || !specs2) {
+        alert('Please select both laptops and wait for specs to load.');
+        return;
+      }
+
+      const model1 = document.getElementById('laptop1').value;
+      const model2 = document.getElementById('laptop2').value;
+
+      document.getElementById('laptop1Title').textContent = model1;
+      document.getElementById('laptop2Title').textContent = model2;
+
+      const keysToCompare = [
+        'Brand', 'Price', 'Display', 'Processor', 'GPU',
+        'Resolution Width', 'Resolution Height', 'Warranty', 'RAM', 'ROM'
+      ];
+
+      const list1 = document.getElementById('specs1');
+      const list2 = document.getElementById('specs2');
+      list1.innerHTML = '';
+      list2.innerHTML = '';
+
+      keysToCompare.forEach(key => {
+        const val1 = specs1[key] || 'N/A';
+        const val2 = specs2[key] || 'N/A';
+
+        const li1 = document.createElement('li');
+        const li2 = document.createElement('li');
+
+        li1.textContent = `${key}: ${val1}`;
+        li2.textContent = `${key}: ${val2}`;
+
+        const numericKeys = ['Price', 'Resolution Width', 'Resolution Height', 'Warranty', 'RAM'];
+        const higherIsBetter = ['Resolution Width', 'Resolution Height', 'Warranty', 'RAM'];
+        const lowerIsBetter = ['Price'];
+
+        if (numericKeys.includes(key)) {
+          const n1 = parseFloat(val1);
+          const n2 = parseFloat(val2);
+          if (!isNaN(n1) && !isNaN(n2)) {
+            if (higherIsBetter.includes(key)) {
+              if (n1 > n2) li1.classList.add('highlight');
+              else if (n2 > n1) li2.classList.add('highlight');
+            } else if (lowerIsBetter.includes(key)) {
+              if (n1 < n2) li1.classList.add('highlight');
+              else if (n2 < n1) li2.classList.add('highlight');
+            }
+          }
+        }
+
+        if (key === 'Processor') {
+          const rank = name => {
+            if (!name) return 0;
+            name = name.toLowerCase();
+            if (name.includes('i9') || name.includes('ryzen 9')) return 5;
+            if (name.includes('i7') || name.includes('ryzen 7')) return 4;
+            if (name.includes('i5') || name.includes('ryzen 5')) return 3;
+            if (name.includes('i3') || name.includes('ryzen 3')) return 2;
+            return 1;
+          };
+          const r1 = rank(val1);
+          const r2 = rank(val2);
+          if (r1 > r2) li1.classList.add('highlight');
+          else if (r2 > r1) li2.classList.add('highlight');
+        }
+
+        if (key === 'GPU') {
+          const rank = name => {
+            if (!name) return 0;
+            name = name.toLowerCase();
+            if (name.includes('rtx')) return 5;
+            if (name.includes('gtx')) return 4;
+            if (name.includes('radeon')) return 3;
+            if (name.includes('intel')) return 2;
+            return 1;
+          };
+          const r1 = rank(val1);
+          const r2 = rank(val2);
+          if (r1 > r2) li1.classList.add('highlight');
+          else if (r2 > r1) li2.classList.add('highlight');
+        }
+
+        if (key === 'ROM') {
+          const parseROM = str => {
+            if (!str) return 0;
+            str = str.toLowerCase();
+            let size = 0;
+            if (str.includes('tb')) size = parseFloat(str) * 1000;
+            else if (str.includes('gb')) size = parseFloat(str);
+            if (str.includes('ssd')) size += 10000; // SSD boost
+            return size || 0;
+          };
+          const r1 = parseROM(val1);
+          const r2 = parseROM(val2);
+          if (r1 > r2) li1.classList.add('highlight');
+          else if (r2 > r1) li2.classList.add('highlight');
+        }
+
+        list1.appendChild(li1);
+        list2.appendChild(li2);
+      });
+
+      document.getElementById('results').style.display = 'flex';
+    }
+  </script>
+</body>
+</html>

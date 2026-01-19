@@ -1,0 +1,218 @@
+/* Base Reset & Font */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Full Page Setup */
+body, html {
+  height: 100%;
+}
+
+body {
+  background: url('https://images.unsplash.com/photo-1517336714731-489689fd1ca8') no-repeat center center fixed;
+  background-size: cover;
+  color: white;
+}
+
+/* Overlay for blur effect */
+.overlay {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  z-index: 0;
+}
+
+/* Container */
+.container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  padding: 20px;
+}
+
+/* Heading */
+.heading {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+/* Paragraph under heading */
+.container p {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  max-width: 700px;
+}
+
+/* Card Layout */
+.card-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* Card Styling */
+.card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 20px;
+  max-width: 300px;
+  min-width: 260px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+/* Card Text */
+.card h2 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 0.95rem;
+  margin-bottom: 15px;
+}
+
+/* Card Button */
+.card a {
+  text-decoration: none;
+  background: white;
+  color: black;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  display: inline-block;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.card a:hover {
+  background: #ddd;
+  color: black;
+}
+
+/* Top Navigation */
+.top-nav {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 2;
+}
+
+.top-nav a {
+  color: white;
+  margin-left: 15px;
+  font-weight: bold;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* ✅ HIDE ONLY "Explore" LINK */
+.top-nav a[href="/explore"] {
+  display: none;
+}
+
+.top-nav a:hover {
+  background: rgba(255, 255, 255, 0.4);
+  color: black;
+}
+
+/* Accessibility: Focus State */
+.card a:focus,
+.top-nav a:focus {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  .heading {
+    font-size: 1.8rem;
+  }
+
+  .card h2 {
+    font-size: 1.1rem;
+  }
+
+  .card p {
+    font-size: 0.9rem;
+  }
+
+  .card {
+    padding: 15px;
+  }
+}
+
+/* ====== Prediction Form: Two Column Layout ====== */
+form#predictionForm {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+form#predictionForm .form-group {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+form#predictionForm label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #333;
+}
+
+form#predictionForm select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #fff;
+  font-size: 14px;
+  color: #000;
+}
+
+form#predictionForm button {
+  grid-column: 1 / -1;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+form#predictionForm button:hover {
+  background-color: #0056b3;
+}
+
+/* Result text styling */
+#result {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: #28a745;
+}
